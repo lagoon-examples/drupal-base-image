@@ -30,7 +30,13 @@ jobs:
     #     password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build drupal-base-cli image
-      run: docker build -t drupal-base-cli:latest -f ./lagoon/cli.dockerfile .
+      run: docker build -t uselagoon/drupal-base-cli:latest -t drupal-base-cli -f ./lagoon/cli.dockerfile .
+
+    - name: Build drupal-base-nginx image
+      run: docker build -t uselagoon/drupal-base-nginx:latest -f ./lagoon/nginx.dockerfile .
+
+    - name: Build drupal-base-php image
+      run: docker build -t uselagoon/drupal-base-php:latest -f ./lagoon/php.dockerfile .
 
     # - name: Build Docker images
     #   run: docker compose -f docker-compose.yml build
