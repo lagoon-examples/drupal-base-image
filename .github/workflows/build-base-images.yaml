@@ -29,6 +29,9 @@ jobs:
     #     username: ${{ github.actor }}
     #     password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Build drupal-base-cli image
+      run: docker build -t drupal-base-cli:latest ./lagoon/cli.dockerfile
+
     - name: Build Docker images
       run: docker compose -f docker-compose.yml build
 
