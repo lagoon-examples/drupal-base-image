@@ -32,8 +32,8 @@ jobs:
     - name: Build drupal-base-cli image
       run: docker build -t drupal-base-cli:latest -f ./lagoon/cli.dockerfile .
 
-    - name: Build Docker images
-      run: docker compose -f docker-compose.yml build
+    # - name: Build Docker images
+    #   run: docker compose -f docker-compose.yml build
 
     - name: List images
       run: docker image ls
