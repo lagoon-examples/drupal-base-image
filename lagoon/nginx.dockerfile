@@ -1,4 +1,4 @@
-ARG CLI_IMAGE
+ARG CLI_IMAGE=drupal-base-cli
 FROM ${CLI_IMAGE} AS cli
 
 FROM uselagoon/nginx-drupal:latest
