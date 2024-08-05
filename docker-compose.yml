@@ -28,10 +28,12 @@ volumes:
 services:
 
   cli: # cli container, will be used for executing composer and any local commands (drush, drupal, etc.)
+    hostname: cli
     build:
       context: .
-      dockerfile: lagoon/cli.dockerfile
-    image: &cli-image ${COMPOSE_PROJECT_NAME:-drupal-base}-cli # this image will be reused as `CLI_IMAGE` in subsequent Docker builds
+      target: cli
+      dockerfile: lagoon/Dockerfile
+    image: drupal-base-cli:latest
     labels:
       # Lagoon Labels
       lagoon.type: cli-persistent
@@ -46,11 +48,12 @@ services:
       << : *default-environment # loads the defined environment variables from the top
 
   nginx:
+    hostname: nginx
     build:
       context: .
-      dockerfile: lagoon/nginx.dockerfile
-      args:
-        CLI_IMAGE: *cli-image # Inject the name of the cli image
+      target: nginx
+      dockerfile: lagoon/Dockerfile
+    image: drupal-base-nginx:latest
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.persistent: /app/web/sites/default/files/ # define where the persistent storage should be mounted too
@@ -68,11 +71,12 @@ services:
       - default
 
   php:
+    hostname: php
     build:
       context: .
-      dockerfile: lagoon/php.dockerfile
-      args:
-        CLI_IMAGE: *cli-image
+      target: php
+      dockerfile: lagoon/Dockerfile
+    image: drupal-base-php:latest
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.name: nginx # we want this service be part of the nginx pod in Lagoon
@@ -100,3 +104,4 @@ services:
 networks:
   amazeeio-network:
     external: true
+  default:
