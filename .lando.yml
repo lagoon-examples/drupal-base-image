@@ -1,0 +1,6 @@
+name: drupal-base
+recipe: lagoon
+config:
+  flavor: drupal
+  build:
+    - composer install
