@@ -1,0 +1,55 @@
+services:
+  cli: # cli container, will be used for executing composer and any local commands (drush, drupal, etc.)
+    hostname: cli
+    image: drupal-base-cli:latest
+    labels:
+      # Lagoon Labels
+      lagoon.type: cli-persistent
+      lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
+      lagoon.persistent: /app/web/sites/default/files/ # location where the persistent storage should be mounted
+      lando.type: php-cli-drupal
+    user: root
+
+  nginx:
+    hostname: nginx
+    image: drupal-base-nginx:latest
+    labels:
+      lagoon.type: nginx-php-persistent
+      lagoon.persistent: /app/web/sites/default/files/ # define where the persistent storage should be mounted too
+      lando.type: nginx-drupal
+    ports:
+      - "8080" # exposes the port 8080 with a random local port, find it with `docker-compose port nginx 8080`
+    user: "1000"
+    depends_on:
+      - cli # basically just tells docker-compose to build the cli first
+    environment:
+      LAGOON_LOCALDEV_URL: http://${COMPOSE_PROJECT_NAME:-drupal-base}.docker.amazee.io
+    networks:
+      - amazeeio-network
+      - default
+
+  php:
+    hostname: php
+    image: drupal-base-php:latest
+    labels:
+      lagoon.type: nginx-php-persistent
+      lagoon.name: nginx # we want this service be part of the nginx pod in Lagoon
+      lagoon.persistent: /app/web/sites/default/files/ # define where the persistent storage should be mounted too
+      lando.type: php-fpm
+    user: "1000"
+    depends_on:
+      - cli # basically just tells docker-compose to build the cli first
+
+  mariadb:
+    image: uselagoon/mariadb-10.11-drupal:latest
+    labels:
+      lagoon.type: mariadb
+      lando.type: mariadb-drupal
+    ports:
+      - "3306" # exposes the port 3306 with a random local port, find it with `docker-compose port mariadb 3306`
+    user: "1000"
+
+networks:
+  amazeeio-network:
+    external: true
+  default:
