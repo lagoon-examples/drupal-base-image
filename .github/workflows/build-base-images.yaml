@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - 'main'
-      - 'test_build'
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -39,6 +40,18 @@ jobs:
           cli.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/cli:latest
           nginx.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/nginx:latest
           php.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/php:latest
+
+    - name: Build and push remote (tag)
+      if: ${{ github.ref_type == 'tag' }}
+      uses: docker/bake-action@v5
+      with:
+        push: true
+        set: |
+          *.platform=linux/amd64,linux/arm64
+          cli.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/cli:${{ github.ref_name }}
+          nginx.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/nginx:${{ github.ref_name }}
+          php.tags=ghcr.io/${{ github.repository_owner }}/drupal-base-image/php:${{ github.ref_name }}
+          
 
     - name: List images
       run: docker image ls
